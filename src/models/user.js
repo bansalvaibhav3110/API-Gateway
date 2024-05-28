@@ -1,7 +1,8 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+const bcrypt = require("bcrypt");
+const { serverConfig } = require("../config");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -13,25 +14,36 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  User.init({
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique:true,
-      validate: {
-        isEmail: true
-      }
+  User.init(
+    {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          isEmail: true,
+        },
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [3, 50],
+        },
+      },
     },
-    password:{
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [3,50]
-      }
-    },
-  }, {
-    sequelize,
-    modelName: 'User',
+    {
+      sequelize,
+      modelName: "User",
+    }
+  );
+  User.beforeCreate(function encrypt(user) {
+    const encryptedPassword = bcrypt.hashSync(
+      user.password,
+      +serverConfig.SALT_ROUNDS
+      //this serverConfig.SALT_ROUNDS is a string so by + we are converting it to a number
+    );
+    user.password = encryptedPassword;
   });
   return User;
 };
