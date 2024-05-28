@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.get('/info',Infocontroller.info);
 
-router.use('/signup' , userRoutes)
+router.use('/user' , userRoutes)
 
 module.exports = router;
