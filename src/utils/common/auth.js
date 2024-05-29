@@ -20,7 +20,17 @@ return jwt.sign(input,serverConfig.JWT_SECRET,{expiresIn:serverConfig.JWT_EXPIRY
   }
 }
 
+function verifyToken(token){
+    try {
+        return jwt.verify(token,serverConfig.JWT_SECRET)
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
   checkPassword,
   createToken,
+  verifyToken
 };
